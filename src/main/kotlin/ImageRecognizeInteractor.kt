@@ -21,7 +21,7 @@ object ImageRecognizeInteractor {
     const val YANDEX_RECOGNIZE_URL = "https://translate.yandex.net/"
 
     fun recognizeAll(imagePath: String, onProgress: (progress: Float) -> Unit) {
-        val allImages = File(imagePath).listFiles()
+        val allImages = File(Configuration.savePath + imagePath).listFiles()
         allImages?.forEachIndexed { index, file ->
             runBlocking { requestForFile(file, imagePath, index, onProgress, allImages) }
         }
@@ -36,28 +36,28 @@ object ImageRecognizeInteractor {
         allImages: Array<File>
     ) {
         try {
-            delay(1000L)
+            delay(3000L)
             val response = requestRecognize()?.recognizeImageLanguage(createFilePart(file))?.execute()
             if (response?.isSuccessful == true) {
                 val string = response.body()?.string()
 
                 if (string?.contains("\"detected_lang\":\"ru\"") == true) {
-                    File("ru_$imagePath").mkdir()
-                    Files.copy(file.toPath(), Paths.get("ru_$imagePath/${file.name}"))
+                    File(Configuration.savePath + "ru_$imagePath").mkdir()
+                    Files.copy(file.toPath(), Paths.get(Configuration.savePath + "ru_$imagePath/${file.name}"))
                     println("response recognize ru")
                 } else if (string?.contains("\"detected_lang\":\"en\"") == true) {
-                    File("en_$imagePath").mkdir()
-                    Files.copy(file.toPath(), Paths.get("en_$imagePath/${file.name}"))
+                    File(Configuration.savePath + "en_$imagePath").mkdir()
+                    Files.copy(file.toPath(), Paths.get(Configuration.savePath + "en_$imagePath/${file.name}"))
                     println("response recognize en")
                 } else {
-                    File("other_$imagePath").mkdir()
-                    Files.copy(file.toPath(), Paths.get("other_$imagePath/${file.name}"))
+                    File(Configuration.savePath + "other_$imagePath").mkdir()
+                    Files.copy(file.toPath(), Paths.get(Configuration.savePath + "other_$imagePath/${file.name}"))
                     println("response recognize other $string")
                 }
             } else {
                 println("response recognize error ${response?.code()} ${response?.message()}")
                 if (response?.code() == 429){
-                    delay(5000L)
+                    delay(15000L)
                     requestForFile(file, imagePath, index, onProgress, allImages)
                 }
             }

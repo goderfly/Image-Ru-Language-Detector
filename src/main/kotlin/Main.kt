@@ -21,10 +21,15 @@ import kotlinx.coroutines.runBlocking
 import org.jetbrains.skija.Image
 import ui.DialogEntity
 import ui.showAlertDialog
+import utils.setPickFolderJFileChooser
 import java.awt.Desktop
 import java.io.File
+import javax.swing.JFileChooser
+import javax.swing.UIManager
+
 
 fun main() = application {
+    UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName())
     Window(
         title = "Image Language Detector",
         state = WindowState(width = 400.dp, height = 270.dp),
@@ -67,6 +72,7 @@ private fun FrameWindowScope.menuBar() {
 
     MenuBar {
         Menu("Настройки") {
+
             Item(
                 text = "Глубина поиска",
                 onClick = {
@@ -76,6 +82,29 @@ private fun FrameWindowScope.menuBar() {
                     }
                 },
                 shortcut = KeyShortcut(Key.C, ctrl = true)
+            )
+            Item(
+                text = "Путь сохранения",
+                onClick = {
+                    UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName()).apply {
+                        UIManager.put("FileChooser.saveButtonText", "Выбрать");
+                        UIManager.put("FileChooser.cancelButtonText", "Отмена");
+                        UIManager.put("FileChooser.saveInLabelText", "");
+                        UIManager.put("FileChooser.usesSingleFilePane", true);
+                        JFileChooser(Configuration.savePath).apply {
+                            components.setPickFolderJFileChooser()
+                            dialogTitle = "Выберите папку для сохранения изображений"
+                            fileSelectionMode = JFileChooser.DIRECTORIES_ONLY
+                            isAcceptAllFileFilterUsed = false;
+
+                            val returnVal: Int = showSaveDialog(null)
+                            if (returnVal == JFileChooser.APPROVE_OPTION) {
+                                Configuration.savePath = this.selectedFile.absolutePath.replace("\\", "/") + "/"
+                            }
+                        }
+                    }
+                },
+                shortcut = KeyShortcut(Key.V, ctrl = true)
             )
         }
 

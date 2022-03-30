@@ -40,8 +40,7 @@ fun showAlertDialog(showDialog: MutableState<DialogEntity>) {
 @Composable
 private fun dialogContent() {
     val textState = remember { mutableStateOf(TextFieldValue()) }
-    var pageDeep by StorableInt()
-    val pageDeepState = remember { mutableStateOf(pageDeep) }
+    val pageDeepState = remember { mutableStateOf(Configuration.pageDeep) }
 
     Row(Modifier.padding(16.dp)) {
         TextField(
@@ -56,7 +55,7 @@ private fun dialogContent() {
                 .height(55.dp)
                 .absolutePadding(left = 8.dp),
             onClick = {
-                pageDeep = textState.value.text.toInt()
+                Configuration.pageDeep = textState.value.text.toInt()
                 pageDeepState.value = textState.value.text.toInt()
             }
         ) {

@@ -36,34 +36,11 @@ object YandexImagesApi {
 
     private fun getOkHttpClient(eventListener: EventListener): OkHttpClient {
         val clientBuilder = OkHttpClient.Builder()
-            /*.cookieJar(
-                object : CookieJar {
-                    private var cookies: ArrayList<Cookie> = arrayListOf(createAdultCookie())
-
-                    override fun saveFromResponse(url: HttpUrl, cookies: List<Cookie>) {
-
-                    }
-
-                    override fun loadForRequest(url: HttpUrl): List<Cookie> {
-                        return cookies
-                    }
-                }
-            )*/
             .connectTimeout(10L, TimeUnit.SECONDS)
             .readTimeout(10L, TimeUnit.SECONDS)
             .writeTimeout(10L, TimeUnit.SECONDS)
             .eventListener(eventListener)
 
         return clientBuilder.build()
-    }
-
-    fun createAdultCookie(): Cookie {
-        println("1955542678.sp.aflt:${System.currentTimeMillis()/1000}")
-        return Cookie.Builder()
-            .domain("yandex.ru")
-            .name("yp")
-            //1955542678.sp.aflt:1639322580
-            .value("1955542678.sp.aflt:${System.currentTimeMillis()/1000}")
-            .build()
     }
 }

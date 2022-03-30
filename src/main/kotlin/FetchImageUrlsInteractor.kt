@@ -9,7 +9,6 @@ object FetchImageUrlsInteractor {
     var callbackProgress: (progress: Float) -> Unit = {}
     var query: String = ""
     var loadedPages = 0
-    var pageDeep by StorableInt()
     var imageUrls = mutableListOf<String>()
 
 
@@ -43,7 +42,7 @@ object FetchImageUrlsInteractor {
     private fun onFetchComplete(imageBlock: Blocks) {
         val html = imageBlock.html
         loadedPages++
-        callbackProgress.invoke(loadedPages / pageDeep.toFloat())
+        callbackProgress.invoke(loadedPages / Configuration.pageDeep.toFloat())
 
         YandexImageUtil.getImageItemListFromHtml(
             html = html,
@@ -51,7 +50,7 @@ object FetchImageUrlsInteractor {
         ).forEach {
             imageUrls.add(it.dups.first().url)
         }
-        if ((loadedPages != imageBlock.params.lastPage) && (loadedPages < pageDeep)) {
+        if ((loadedPages != imageBlock.params.lastPage) && (loadedPages < Configuration.pageDeep)) {
             println("load new page")
             getImageUrls(loadedPages)
         } else {
